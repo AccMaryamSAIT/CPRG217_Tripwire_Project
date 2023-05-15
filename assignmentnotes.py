@@ -11,11 +11,5 @@ checks against a directory
 
 code has error checking 
 code uses hashing 
-<<<<<<< HEAD
-test
+test test
 '''
-=======
-
-'''
-"Eric Was Here"
->>>>>>> 557f0b16eb7fc6f706ea966f9aa2ae6b9088f9e6
