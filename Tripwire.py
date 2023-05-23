@@ -30,14 +30,13 @@ record file that the directory will be checked against.
 C O D E 
 '''
 #code starts here
-
 import sys # Use the sys module to access arguments passed through the shell
 import os # Use the os module for iterating files within a directory and checking if directory passed as an arg exists
 import hashlib # Use hashlib module for generating a hash value
 
 """
 Authors: Maryam Bunama, Eric Russon, Roman Kapitoulski.
-Version: 1.0
+Version: 1.1
 Date: May 23, 2023
 Program: Tripwire.py
 Description: This script serves two purposes.
@@ -167,7 +166,6 @@ if len(args) == 4:
         if (directory + file) == recordName:
             continue
         if os.path.isfile(directory + file):
-            print(file + " exists")
             # Open the file
             fileContent = open(directory + file, "rb")
             # Pass the file's binary data to the generateHash function
@@ -181,13 +179,92 @@ if len(args) == 4:
 
 ### 2 arguments to compare the directory to the record
 elif len(args) == 2:
-    ## Compare specified directory to record
-    # Use the hash function on each file in the directory
-    # Compare it with record
-    # Specify any changes
-    # Report to console
-    print("Evaluating a directory...")
+    # Get the record name
+    recordName = args[1]
+
+    # Check if record name exists
+    if not os.path.exists(recordName):
+        print(recordName + " does not exists")
+        exitProgram()
+
+    # Create lists to store files that have been modified, added, or removed
+    modified = []
+    removed = []
+    added = []
+
+    # Check the record's file contents for directory location
+    outfile = open(recordName, "r")
+    directory = outfile.readline().strip()
+
+    # Create a list to store key/value pairs
+    filesInRecord = []
+
+    # Append the list that holds key/value pairs
+    for line in outfile:
+        filesInRecord.append(line.strip())
+
+    # Iterate through the directory and compare the hash values
+    files = os.listdir(directory)
+    for file in files:
+        # Ignore the record file
+        if (directory + file) == recordName:
+            continue
+
+        # Assume that the file isn't in the record
+        contains = False
+
+        # Loop through the Key/Value pairs in filesInRecord list
+        for filename in filesInRecord:
+            # Split the Key/Value pair by the space between them.
+            key, value = filename.split()
+
+            ## Check to see if file has been modified
+            if file == key:
+                # File is in the record
+                contains = True
+                # Open the file and read its binary data
+                filedata = open(directory + file, "rb")
+                # Generate hash
+                hash = generateHash(filedata.read())
+                # Compare hash values to see if the file's been modified
+                if hash != value:
+                    # If modified add the file to the modified list
+                    modified.append(key)
+
+        ## Check to see if any files have been added.
+        if not contains:
+            added.append(file)
+
+    # Loop through the Key/Value pairs in filesInRecord list
+    for filename in filesInRecord:
+        # Split the Key/Value pair by the space between them.
+        key, value = filename.split()
+        ## Check to see if file has been removed
+        if files.count(key) < 1:
+            removed.append(key)
+
+    ## Report to console
+    print("\n" + directory)
+    print("\nModified:")
+    for file in modified:
+        print(file + " ")
+    print("\nRemoved:")
+    for file in removed:
+        print(file + " ")
+    print("\nAdded:")
+    for file in added:
+        print(file + " ")
+
+    print("\n")
 
 else:
     invalidArguments()
-    sys.exit(0)
+    exitProgram()
+
+
+
+
+
+
+
+
