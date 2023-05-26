@@ -1,9 +1,3 @@
-"""
-
-PSEUDOCODE HERE 
-
-
-"""
 
 """
 Authors: Maryam Bunama, Eric Russon, Roman Kapitoulski.
