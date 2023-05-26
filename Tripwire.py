@@ -64,12 +64,6 @@ def generateHash(fileContent):
     hash = hashlib.md5(fileContent).hexdigest() # Use hashlib.md5(data).hextdigest() hash algorithm
     return hash
 
-## Function to take file read result and turn it into string to allow hashing function to perform
-def listToString(list):
-    byteString = b" " # initialize an empty string
-    byteString = byteString.join(list) #creates string 
-    return byteString
-
 ## Function to create the tripwireRecord file
 def createTripwireRecord():
     infile = open(recordName, 'w') # Create the record/Overwrite the record for writing. Input to record file is "infile"
@@ -83,10 +77,9 @@ def createTripwireRecord():
     
         elif os.path.isfile(filePath): 
             with open(filePath, 'rb') as f:
-                data = f.readlines()                          
-                stringdata = listToString(data) # turn the generated list into string data for hash function to work                           
-                data = generateHash(stringdata) # Pass the file's binary data to the generateHash functions
-                infile.write(f'{file} {data}\n') # Write the key/value pair to the record file 
+                data = f.read()                          
+                hash = generateHash(data) # Pass the file's binary data to the generateHash functions
+                infile.write(f'{file} {hash}\n') # Write the key/value pair to the record file 
 
     infile.close()
 
